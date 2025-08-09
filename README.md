@@ -1,40 +1,64 @@
-# 📊 Grafana + Prometheus + Node Exporter (Docker Compose)
+# 📊 Мониторинг сервера с Grafana + Prometheus + Node Exporter
 
-Полный стек мониторинга на **Ubuntu 22.04**.
+Этот проект поднимает систему мониторинга на базе **Grafana**, **Prometheus** и **Node Exporter** в Docker.  
+Подходит для мониторинга Linux-серверов с визуализацией метрик.
 
 ---
 
-## 🚀 Установка
+## 📦 Что входит
+- **Prometheus** — сбор и хранение метрик
+- **Node Exporter** — экспорт системных метрик сервера
+- **Grafana** — веб-интерфейс для визуализации данных
+
+---
+
+## 🚀 Установка и запуск
 
 ### 1. Установите Docker и Docker Compose
 ```bash
-sudo apt update && sudo apt upgrade -y
+sudo apt update
 sudo apt install docker.io docker-compose -y
-sudo systemctl enable docker
-sudo systemctl start docker
-
-### 2. Клонируйте репозиторий
-```bash
-git clone https://github.com/username/grafana-prometheus-monitoring.git
+sudo systemctl enable --now docker
+2. Клонируйте проект
+bash
+Копировать
+Редактировать
+git clone https://github.com/USERNAME/grafana-prometheus-monitoring.git
 cd grafana-prometheus-monitoring
-
-### 3. Структура проекта
-.
-├── docker-compose.yml
-├── prometheus
-│   └── prometheus.yml
+3. Структура проекта
+Копировать
+Редактировать
+grafana-prometheus-monitoring/
+│── docker-compose.yml
+│── prometheus.yml
 └── README.md
+⚙️ Конфигурация Prometheus (prometheus.yml)
+yaml
+Копировать
+Редактировать
+global:
+  scrape_interval: 5s
 
-📄 Конфигурация
-docker-compose.yml
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["prometheus:9090"]
+
+  - job_name: "node_exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+📜 docker-compose.yml
+yaml
+Копировать
+Редактировать
 version: "3.8"
-```yaml
+
 services:
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
     restart: unless-stopped
@@ -51,62 +75,38 @@ services:
     container_name: grafana
     ports:
       - "3000:3000"
-    volumes:
-      - grafana-data:/var/lib/grafana
     restart: unless-stopped
-
-volumes:
-  grafana-data:
-
-prometheus/prometheus.yml
-```yaml
-global:
-  scrape_interval: 15s
-
-scrape_configs:
-  - job_name: "prometheus"
-    static_configs:
-      - targets: ["prometheus:9090"]
-
-  - job_name: "node-exporter"
-    static_configs:
-      - targets: ["node-exporter:9100"]
-
 ▶️ Запуск
-```bash
+bash
+Копировать
+Редактировать
 docker-compose up -d
-Проверка контейнеров:
-```bash
-docker ps
+🔗 Доступ
+Prometheus: http://SERVER_IP:9090
 
-🌐 Доступ к сервисам
-Prometheus → http://localhost:9090
+Node Exporter: http://SERVER_IP:9100/metrics
 
-Node Exporter → http://localhost:9100/metrics
-
-Grafana → http://localhost:3000
-Логин: admin
-Пароль: admin (попросит сменить при первом входе)
+Grafana: http://SERVER_IP:3000 (логин: admin, пароль: admin)
 
 📊 Настройка Grafana
-Зайдите в Grafana.
+Перейдите в Grafana → Configuration → Data Sources
 
-Добавьте источник данных:
-URL: http://prometheus:9090
-Импортируйте готовые дашборды, например:
-Node Exporter Full (ID: 1860)
-Prometheus Stats (ID: 2)
+Добавьте Prometheus с URL:
 
-🛑 Остановка и удаление
-```bash
+arduino
+Копировать
+Редактировать
+http://prometheus:9090
+Импортируйте готовый Dashboard:
+
+ID: 1860 (Node Exporter Full)
+
+Источник: Grafana Dashboards
+
+🛑 Остановка
+bash
+Копировать
+Редактировать
 docker-compose down
-
-📌 Полезное
-Документация Grafana
-Документация Prometheus
-Node Exporter GitHub
-
-```yaml
----
-Хочешь, я тебе ещё сразу сделаю готовую **структуру файлов с этим README и конфигами**, чтобы можно было просто `git clone && docker-compose up -d` и всё заработало?  
-Тогда вообще будет под ключ.
+📜 Лицензия
+MIT License — используйте и модифицируйте свободно.
