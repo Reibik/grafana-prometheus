@@ -1,3 +1,4 @@
+````markdown
 # 📊 Мониторинг сервера с Grafana + Prometheus + Node Exporter
 
 Этот проект поднимает систему мониторинга на базе **Grafana**, **Prometheus** и **Node Exporter** в Docker.  
@@ -19,23 +20,29 @@
 sudo apt update
 sudo apt install docker.io docker-compose -y
 sudo systemctl enable --now docker
-2. Клонируйте проект
-bash
-Копировать
-Редактировать
+````
+
+### 2. Клонируйте проект
+
+```bash
 git clone https://github.com/USERNAME/grafana-prometheus-monitoring.git
 cd grafana-prometheus-monitoring
-3. Структура проекта
-Копировать
-Редактировать
+```
+
+### 3. Структура проекта
+
+```
 grafana-prometheus-monitoring/
 │── docker-compose.yml
 │── prometheus.yml
 └── README.md
-⚙️ Конфигурация Prometheus (prometheus.yml)
-yaml
-Копировать
-Редактировать
+```
+
+---
+
+## ⚙️ Конфигурация Prometheus (`prometheus.yml`)
+
+```yaml
 global:
   scrape_interval: 5s
 
@@ -47,10 +54,13 @@ scrape_configs:
   - job_name: "node_exporter"
     static_configs:
       - targets: ["node-exporter:9100"]
-📜 docker-compose.yml
-yaml
-Копировать
-Редактировать
+```
+
+---
+
+## 📜 docker-compose.yml
+
+```yaml
 version: "3.8"
 
 services:
@@ -76,37 +86,57 @@ services:
     ports:
       - "3000:3000"
     restart: unless-stopped
-▶️ Запуск
-bash
-Копировать
-Редактировать
+```
+
+---
+
+## ▶️ Запуск
+
+```bash
 docker-compose up -d
-🔗 Доступ
-Prometheus: http://SERVER_IP:9090
+```
 
-Node Exporter: http://SERVER_IP:9100/metrics
+---
 
-Grafana: http://SERVER_IP:3000 (логин: admin, пароль: admin)
+## 🔗 Доступ
 
-📊 Настройка Grafana
-Перейдите в Grafana → Configuration → Data Sources
+* **Prometheus:** http\://SERVER\_IP:9090
+* **Node Exporter:** http\://SERVER\_IP:9100/metrics
+* **Grafana:** http\://SERVER\_IP:3000 (логин: `admin`, пароль: `admin`)
 
-Добавьте Prometheus с URL:
+---
 
-arduino
-Копировать
-Редактировать
-http://prometheus:9090
-Импортируйте готовый Dashboard:
+## 📊 Настройка Grafana
 
-ID: 1860 (Node Exporter Full)
+1. Перейдите в Grafana → **Configuration → Data Sources**
+2. Добавьте **Prometheus** с URL:
 
-Источник: Grafana Dashboards
+   ```
+   http://prometheus:9090
+   ```
+3. Импортируйте готовый **Dashboard**:
 
-🛑 Остановка
-bash
-Копировать
-Редактировать
+   * ID: `1860` (Node Exporter Full)
+   * Источник: [Grafana Dashboards](https://grafana.com/grafana/dashboards/1860)
+
+---
+
+## 🛑 Остановка
+
+```bash
 docker-compose down
-📜 Лицензия
+```
+
+---
+
+## 📜 Лицензия
+
 MIT License — используйте и модифицируйте свободно.
+
+```
+
+---
+
+Хочешь, я тебе к этому `README.md` сразу сделаю полный рабочий **архив с docker-compose.yml и prometheus.yml**, чтобы можно было скачать и запустить без правок?  
+Тогда будет реально "под ключ".
+```
