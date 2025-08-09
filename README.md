@@ -1,76 +1,74 @@
-````markdown
-# 📊 Мониторинг сервера с Grafana + Prometheus + Node Exporter
+# 📊 Grafana + Prometheus + Node Exporter (Docker Compose)
 
-Этот проект поднимает систему мониторинга на базе **Grafana**, **Prometheus** и **Node Exporter** в Docker.  
-Подходит для мониторинга Linux-серверов с визуализацией метрик.
+Полный стек мониторинга на **Ubuntu 22.04**.
 
 ---
 
-## 📦 Что входит
-- **Prometheus** — сбор и хранение метрик
-- **Node Exporter** — экспорт системных метрик сервера
-- **Grafana** — веб-интерфейс для визуализации данных
-
----
-
-## 🚀 Установка и запуск
+## 🚀 Установка
 
 ### 1. Установите Docker и Docker Compose
 ```bash
-sudo apt update
+sudo apt update && sudo apt upgrade -y
 sudo apt install docker.io docker-compose -y
-sudo systemctl enable --now docker
+sudo systemctl enable docker
+sudo systemctl start docker
+
 ````
 
-### 2. Клонируйте проект
+---
+
+### 2. Клонируйте проект или создайте папку
 
 ```bash
-git clone https://github.com/USERNAME/grafana-prometheus-monitoring.git
-cd grafana-prometheus-monitoring
-```
-
-### 3. Структура проекта
-
-```
-grafana-prometheus-monitoring/
-│── docker-compose.yml
-│── prometheus.yml
-└── README.md
+mkdir ~/grafana-prometheus && cd ~/grafana-prometheus
 ```
 
 ---
 
-## ⚙️ Конфигурация Prometheus (`prometheus.yml`)
+### 3. Конфигурация Prometheus
+
+**`prometheus.yml`**:
 
 ```yaml
 global:
   scrape_interval: 5s
 
 scrape_configs:
-  - job_name: "prometheus"
+  - job_name: 'prometheus'
     static_configs:
-      - targets: ["prometheus:9090"]
+      - targets: ['prometheus:9090']
 
-  - job_name: "node_exporter"
+  - job_name: 'node'
     static_configs:
-      - targets: ["node-exporter:9100"]
+      - targets: ['node-exporter:9100']
 ```
 
 ---
 
-## 📜 docker-compose.yml
+### 4. Docker Compose файл
+
+**`docker-compose.yml`**:
 
 ```yaml
-version: "3.8"
+version: '3.8'
 
 services:
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
     restart: unless-stopped
 
   node-exporter:
@@ -80,17 +78,13 @@ services:
       - "9100:9100"
     restart: unless-stopped
 
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    restart: unless-stopped
+volumes:
+  grafana-data:
 ```
 
 ---
 
-## ▶️ Запуск
+### 5. Запуск
 
 ```bash
 docker-compose up -d
@@ -98,26 +92,25 @@ docker-compose up -d
 
 ---
 
-## 🔗 Доступ
+## 🔍 Доступ
 
-* **Prometheus:** http\://SERVER\_IP:9090
-* **Node Exporter:** http\://SERVER\_IP:9100/metrics
-* **Grafana:** http\://SERVER\_IP:3000 (логин: `admin`, пароль: `admin`)
+* **Prometheus** → [http://localhost:9090](http://localhost:9090)
+* **Grafana** → [http://localhost:3000](http://localhost:3000)
+
+  * Логин: `admin`
+  * Пароль: `admin` (измените при первом входе)
+* **Node Exporter** → [http://localhost:9100/metrics](http://localhost:9100/metrics)
 
 ---
 
-## 📊 Настройка Grafana
+## 📈 Настройка Grafana
 
-1. Перейдите в Grafana → **Configuration → Data Sources**
-2. Добавьте **Prometheus** с URL:
-
-   ```
-   http://prometheus:9090
-   ```
-3. Импортируйте готовый **Dashboard**:
-
-   * ID: `1860` (Node Exporter Full)
-   * Источник: [Grafana Dashboards](https://grafana.com/grafana/dashboards/1860)
+1. Войдите в Grafana.
+2. Перейдите в **Connections → Data Sources → Add data source**.
+3. Выберите **Prometheus**.
+4. Укажите `http://prometheus:9090`.
+5. Сохраните.
+6. Импортируйте дашборд с ID `1860` для Node Exporter.
 
 ---
 
@@ -127,16 +120,21 @@ docker-compose up -d
 docker-compose down
 ```
 
+## 🔄 Перезапуск
+
+```bash
+docker-compose restart
+```
+
 ---
 
-## 📜 Лицензия
+## 📦 Структура проекта
 
+```
+grafana-prometheus/
+│── docker-compose.yml
+│── prometheus.yml
+└── README.md
+```
+📜 Лицензия
 MIT License — используйте и модифицируйте свободно.
-
-```
-
----
-
-Хочешь, я тебе к этому `README.md` сразу сделаю полный рабочий **архив с docker-compose.yml и prometheus.yml**, чтобы можно было скачать и запустить без правок?  
-Тогда будет реально "под ключ".
-```
